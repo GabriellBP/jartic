@@ -5,10 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
@@ -27,10 +24,13 @@ public class JarticController implements Initializable, Observer {
     private Canvas canvas;
 
     @FXML
-    private TextField serverIP, status;
+    private TextField serverIP, status, chatInput;
 
     @FXML
-    private Button btnEnter, btnCreate;
+    private TextArea chat;
+
+    @FXML
+    private Button btnEnter, btnCreate, btnChat;
 
     private GraphicsContext brushTool;
     private Connector connector;
@@ -38,11 +38,23 @@ public class JarticController implements Initializable, Observer {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         brushTool = canvas.getGraphicsContext2D();
+        btnChat.setDefaultButton(true);
     }
 
     private void disableButtons(boolean disable) {
         this.btnCreate.setDisable(disable);
         this.btnEnter.setDisable(disable);
+        this.btnChat.setDisable(!disable);
+    }
+
+    @FXML
+    void sendMessage() {
+        if(connector != null) {
+            MessagePacket message = new MessagePacket(chatInput.getText());
+            connector.sendPacket(message);
+            this.chatInput.clear();
+            write(message, true);
+        }
     }
 
     @FXML
@@ -69,7 +81,7 @@ public class JarticController implements Initializable, Observer {
             double x = e.getX() - size / 2, y = e.getY() - size / 2;
             Color color = colorPicker.getValue();
             DrawPacket drawPacket = new DrawPacket(x, y, size, color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity());
-            connector.sendDraw(drawPacket);
+            connector.sendPacket(drawPacket);
             this.draw(drawPacket);
         });
     }
@@ -78,7 +90,7 @@ public class JarticController implements Initializable, Observer {
     public void update(Observable observable, Object obj) {
         if (observable instanceof Server || observable instanceof Client) {
             status.setText("Conexão estabelecida!");
-            DrawThread drawThread = new DrawThread(connector);
+            ConnectionThread drawThread = new ConnectionThread(connector);
             drawThread.setDaemon(true);
             drawThread.start();
             startDrawing();
@@ -90,28 +102,34 @@ public class JarticController implements Initializable, Observer {
         brushTool.fillRoundRect(draw.x, draw.y, draw.brushSize, draw.brushSize, draw.brushSize, draw.brushSize);
     }
 
-    class DrawThread extends Thread {
+    private void write(MessagePacket message, boolean owner) {
+        chat.appendText((owner ? "Você: " : "Amigo: ") + message.message + "\n");
+    }
+
+    class ConnectionThread extends Thread {
         Connector con;
 
-        DrawThread(Connector con){
+        ConnectionThread(Connector con){
             this.con = con;
         }
 
         @Override
         public void run() {
-            Packet message;
+            Packet packet;
             do{
                 try{
-                    message = (Packet) this.con.input.readObject();
-                    if (message.type.equals("DRAW")) {
-                        draw((DrawPacket) message);
+                    packet = (Packet) this.con.input.readObject();
+                    if (packet.type.equals("DRAW")) {
+                        draw((DrawPacket) packet);
+                    } else if (packet.type.equals("MESSAGE")) {
+                        write((MessagePacket) packet, false);
                     }
                 }catch(Exception e){
                     System.out.println("The user has sent an unknown object!");
 //                    e.printStackTrace();
                     break;
                 }
-            } while (!message.type.equals("END"));
+            } while (!packet.type.equals("END"));
 
             this.con.closeConnection();
             status.setText("Conexão perdida!");
@@ -119,5 +137,4 @@ public class JarticController implements Initializable, Observer {
             canvas.setOnMouseDragged(null);
         }
     }
-
 }

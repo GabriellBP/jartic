@@ -40,12 +40,22 @@ public abstract class Connector extends Observable {
     }
 
     //Send a draw to the client
-    public void sendDraw(DrawPacket draw){
+//    public void sendDraw(DrawPacket draw){
+//        try{
+//            output.writeObject(draw);
+//            output.flush();
+//        }catch(IOException ioException){
+//            System.out.println("\n ERROR: CANNOT SEND MESSAGE, PLEASE RETRY");
+//            ioException.printStackTrace();
+//        }
+//    }
+
+    public void sendPacket(Packet pkt){
         try{
-            output.writeObject(draw);
+            output.writeObject(pkt);
             output.flush();
         }catch(IOException ioException){
-            System.out.println("\n ERROR: CANNOT SEND MESSAGE, PLEASE RETRY");
+            System.out.println("\n ERROR: CANNOT SEND MESSAGE/DRAW, PLEASE RETRY");
             ioException.printStackTrace();
         }
     }
