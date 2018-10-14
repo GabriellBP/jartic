@@ -9,11 +9,14 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.ufal.ic.jartic.GUI.JarticController">
    <children>
-      <ColorPicker fx:id="colorPicker" layoutX="3.0" layoutY="4.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+      <ColorPicker fx:id="colorPicker" layoutX="3.0" layoutY="4.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
       <Canvas fx:id="canvas" height="570.0" layoutX="3.0" layoutY="35.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="-5.0" AnchorPane.topAnchor="35.0" />
-      <Slider fx:id="brushSize" layoutX="188.0" layoutY="10.0" max="200.0" min="5.0" value="10.0" />
-      <TextField layoutX="414.0" layoutY="5.0" fx:id="serverIP"/>
-      <Button layoutX="601.0" layoutY="5.0" mnemonicParsing="false" onAction="#enterRoom" text="Entrar" />
-      <Button layoutX="690.0" layoutY="5.0" mnemonicParsing="false" onAction="#createRoom" text="Criar Sala" />
+      <Slider fx:id="brushSize" layoutX="150.0" layoutY="10.0" max="200.0" maxHeight="-Infinity" maxWidth="-Infinity" min="5.0" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" value="10.0" AnchorPane.leftAnchor="150.0" />
+      <Button fx:id="btnEnter" layoutX="465.0" layoutY="3.0" maxHeight="28.0" minHeight="28.0" mnemonicParsing="false" onAction="#enterRoom" prefHeight="28.0" prefWidth="201.0" text="Entrar" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="3.0">
+         <graphic>
+            <TextField fx:id="serverIP" layoutX="350.0" maxHeight="20.0" maxWidth="-Infinity" minHeight="20.0" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" />
+         </graphic></Button>
+      <Button fx:id="btnCreate" layoutX="690.0" layoutY="5.0" mnemonicParsing="false" onAction="#createRoom" text="Criar Sala" AnchorPane.leftAnchor="530.0" />
+      <TextField fx:id="status" disable="true" editable="false" layoutX="637.0" layoutY="5.0" promptText="Status" AnchorPane.leftAnchor="625.0" />
    </children>
 </AnchorPane>

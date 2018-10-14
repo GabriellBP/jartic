@@ -1,5 +1,7 @@
 package br.ufal.ic.jartic.connection;
 
+import javafx.scene.control.TextField;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,10 +14,7 @@ public abstract class Connector extends Observable {
     public ObjectInputStream input;
     ServerSocket server;
     Socket connection;
-
-    public void draw(DrawPacket draw) {
-        System.out.println("OI");
-    }
+    TextField status;
 
     void setupStreams() throws IOException{
         System.out.println(this.connection);
@@ -27,12 +26,14 @@ public abstract class Connector extends Observable {
         System.out.println("\n Streams are now setup \n");
     }
 
-    void closeConnection(){
+    public void closeConnection(){
         System.out.println("\n Closing Connections... \n");
         try{
             output.close(); //Closes the output path to the client
             input.close(); //Closes the input path to the server, from the client.
             connection.close(); //Closes the connection between you can the client
+            notifyObservers(new Packet("END"));
+            System.out.println("Connections closed!");
         }catch(IOException ioException){
             ioException.printStackTrace();
         }
@@ -43,7 +44,6 @@ public abstract class Connector extends Observable {
         try{
             output.writeObject(draw);
             output.flush();
-            System.out.println("\nSERVER -");
         }catch(IOException ioException){
             System.out.println("\n ERROR: CANNOT SEND MESSAGE, PLEASE RETRY");
             ioException.printStackTrace();

@@ -5,12 +5,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
@@ -26,34 +26,37 @@ public class JarticController implements Initializable, Observer {
     @FXML
     private Canvas canvas;
 
-    private GraphicsContext brushTool;
-
-    private Connector connector;
+    @FXML
+    private TextField serverIP, status;
 
     @FXML
-    private TextField serverIP;
+    private Button btnEnter, btnCreate;
+
+    private GraphicsContext brushTool;
+    private Connector connector;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         brushTool = canvas.getGraphicsContext2D();
+    }
 
+    private void disableButtons(boolean disable) {
+        this.btnCreate.setDisable(disable);
+        this.btnEnter.setDisable(disable);
     }
 
     @FXML
     void createRoom() {
-        if (connector != null)
-            return;
-        connector = new Server();
+        disableButtons(true);
+        connector = new Server(status);
         connector.addObserver(this);
         connector.startRunning();
     }
 
     @FXML
     void enterRoom() {
-        if (connector != null)
-            return;
-        connector = new Client(serverIP.getText());
+        disableButtons(true);
+        connector = new Client(serverIP.getText(), status);
         connector.addObserver(this);
         connector.startRunning();
     }
@@ -61,6 +64,7 @@ public class JarticController implements Initializable, Observer {
     private void startDrawing() {
         canvas.setOnMouseDragged(e -> {
             System.out.println("x: " + e.getX() + ", y: " + e.getY());
+
             double size = brushSize.getValue();
             double x = e.getX() - size / 2, y = e.getY() - size / 2;
             Color color = colorPicker.getValue();
@@ -73,7 +77,7 @@ public class JarticController implements Initializable, Observer {
     @Override
     public void update(Observable observable, Object obj) {
         if (observable instanceof Server || observable instanceof Client) {
-            System.out.println("OBSERVED!");
+            status.setText("Conexão estabelecida!");
             DrawThread drawThread = new DrawThread(connector);
             drawThread.setDaemon(true);
             drawThread.start();
@@ -95,7 +99,7 @@ public class JarticController implements Initializable, Observer {
 
         @Override
         public void run() {
-            Packet message = null;
+            Packet message;
             do{
                 try{
                     message = (Packet) this.con.input.readObject();
@@ -104,9 +108,15 @@ public class JarticController implements Initializable, Observer {
                     }
                 }catch(Exception e){
                     System.out.println("The user has sent an unknown object!");
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    break;
                 }
-            } while (message == null || !message.type.equals("END"));
+            } while (!message.type.equals("END"));
+
+            this.con.closeConnection();
+            status.setText("Conexão perdida!");
+            disableButtons(false);
+            canvas.setOnMouseDragged(null);
         }
     }
 

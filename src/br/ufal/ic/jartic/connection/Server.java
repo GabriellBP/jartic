@@ -1,17 +1,20 @@
 package br.ufal.ic.jartic.connection;
 
+import javafx.scene.control.TextField;
+
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Server extends Connector {
 
+    public Server(TextField status) {
+        this.status = status;
+    }
+
     public void startRunning(){
         try{
-            server = new ServerSocket (1717);
+            server = new ServerSocket(1717);
             waitForConnection();
         }catch(EOFException eofException){
             System.out.println("\n Client terminated the connection");
@@ -22,6 +25,7 @@ public class Server extends Connector {
 
     private void waitForConnection(){
         System.out.println(" Waiting for someone to connect... ");
+        status.setText("Aguardando conexão...");
         Thread serverThread = new Thread(() -> {
             try {
                 connection = server.accept();
