@@ -1,4 +1,4 @@
-package br.ufal.ic.jartic.connection;
+package br.ufal.ic.jartic.connection.packet;
 
 public class DrawPacket extends Packet {
     public double x, y, brushSize, colorRed, colorGreen, colorBlue, colorOpacity;

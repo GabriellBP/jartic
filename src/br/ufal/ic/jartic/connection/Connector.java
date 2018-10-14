@@ -1,5 +1,6 @@
 package br.ufal.ic.jartic.connection;
 
+import br.ufal.ic.jartic.connection.packet.Packet;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
@@ -39,17 +40,7 @@ public abstract class Connector extends Observable {
         }
     }
 
-    //Send a draw to the client
-//    public void sendDraw(DrawPacket draw){
-//        try{
-//            output.writeObject(draw);
-//            output.flush();
-//        }catch(IOException ioException){
-//            System.out.println("\n ERROR: CANNOT SEND MESSAGE, PLEASE RETRY");
-//            ioException.printStackTrace();
-//        }
-//    }
-
+    //Send a packet to the client
     public void sendPacket(Packet pkt){
         try{
             output.writeObject(pkt);

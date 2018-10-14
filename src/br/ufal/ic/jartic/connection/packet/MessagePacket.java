@@ -1,4 +1,4 @@
-package br.ufal.ic.jartic.connection;
+package br.ufal.ic.jartic.connection.packet;
 
 public class MessagePacket extends Packet {
     public String message;

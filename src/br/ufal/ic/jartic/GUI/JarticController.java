@@ -1,6 +1,9 @@
 package br.ufal.ic.jartic.GUI;
 
 import br.ufal.ic.jartic.connection.*;
+import br.ufal.ic.jartic.connection.packet.DrawPacket;
+import br.ufal.ic.jartic.connection.packet.MessagePacket;
+import br.ufal.ic.jartic.connection.packet.Packet;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
